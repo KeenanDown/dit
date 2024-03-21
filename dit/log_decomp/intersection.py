@@ -12,8 +12,9 @@ __all__=[
 from ..npdist import Distribution
 from .content import content, measure
 from .combinatorics import get_n_atoms, upper_set
+import warnings
 
-def shared(dist, list_of_rv_groups, order = 2, log_base = 2):
+def shared(dist, list_of_rv_groups, order = 2, log_base = 2, multi_count=False):
     """
     Returns the shared information derived from the logarithmic decomposition
     shared between the groups of random variables in 'list_of_rv_groups'.
@@ -40,6 +41,9 @@ def shared(dist, list_of_rv_groups, order = 2, log_base = 2):
     To see what information X and Y redundantly give about Z, do [["X"], ["Y"], ["Z"]]
     For information they give together about Z, do [["X", "Y"], ["Z"]].
     """
+    # Raise a warning that this measure might not be correct.
+    warnings.warn("More recent work has shown this measure might not be correct for multivariable systems. Proceed with caution.", DeprecationWarning, stacklevel=2)
+
     # Check the inputs are the correct types.
     if not isinstance(dist, Distribution):
         raise TypeError("'dist' must be a dit distribution.")
