@@ -5,7 +5,7 @@ https://arxiv.org/abs/2305.07554
 """
 
 from ..pid import BasePID
-from ...log_decomp.intersection import shared
+from ...log_decomp.intersection import weakly_shared
 
 __all__ = [
     'PID_LogDec'
@@ -20,7 +20,7 @@ class PID_LogDec(BasePID):
     _name = "I_LogDec"
 
     @staticmethod
-    def _measure(d, sources, target, order = 2):
+    def _measure(d, sources, target, order = 2, method = "cross"):
         """
         I_LogDec measures the entropy associated to 2-atom upper sets by default.
         
@@ -35,7 +35,11 @@ class PID_LogDec(BasePID):
         order : int, string
             The order of generators. Default is 2. If set to 'even' then all even
             atoms are taken as generators. If 'odd', then all odd atoms are
-            generators.
+            generators. Only relevant for "shared_generator" method.
+        method : string
+            "cross" or "shared_generator". Default is "cross". Which of the logarithmic decomposition
+            PID measures to use. The "shared_generator" was an earlier approach which appears to be incorrect
+            as it gives nonzero shared information between three independent systems.
 
         Returns
         -------
@@ -44,4 +48,9 @@ class PID_LogDec(BasePID):
         """
         # Format appropriately for log_decomp.shared.
         source_list = [tuple([list(x) for x in sources])]
-        return shared(d, [*source_list[0], list(target)], order)
+
+        # If using the "shared-generator" measure, compute that way.
+        if method == "shared_generator":
+            return weakly_shared(d, [*source_list[0], list(target)], order)
+        elif method == "cross":
+            pass
